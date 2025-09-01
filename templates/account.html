@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
+  <title>Account Information</title>
+  <style>
+    .account-section {
+      max-width: 720px;
+      margin: 2rem auto;
+      background: var(--light);
+      padding: 2.5rem 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      text-align: center;
+    }
+
+    .account-photo {
+      width: 130px;
+      height: 130px;
+      object-fit: cover;
+      border-radius: 50%;
+      margin-bottom: 1.5rem;
+      border: 4px solid var(--blue);
+    }
+
+    .account-name {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 1rem;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      margin: 0.75rem 0;
+      padding: 0.5rem 1rem;
+      background-color: var(--grey);
+      border-radius: 8px;
+    }
+
+    .info-label {
+      font-weight: 600;
+      color: var(--dark);
+    }
+
+    .info-value {
+      color: var(--dark);
+    }
+
+    .signout-button {
+      margin-top: 2rem;
+      background: var(--red);
+      color: white;
+      padding: 0.9rem;
+      width: 100%;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .signout-button:hover {
+      background: #b83832;
+    }
+
+    @media (max-width: 600px) {
+      .info-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .info-label {
+        margin-bottom: 0.3rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+ <!-- SIDEBAR -->
+<section id="sidebar">
+  <a href="{{ url_for('account_info') }}" class="brand">
+    <i class='bx bxs-smile'></i>
+    <span class="text">User Panel</span>
+  </a>
+  <ul class="side-menu top">
+    <li><a href="{{ url_for('index') }}"><i class='bx bxs-dashboard'></i><span class="text">Dashboard</span></a></li>
+    <li class="active"><a href="{{ url_for('account_info') }}"><i class='bx bxs-user'></i><span class="text">Account Info</span></a></li>
+    <li><a href="{{ url_for('equipment') }}"><i class='bx bxs-doughnut-chart'></i><span class="text">Equipment Details</span></a></li>
+    <li><a href="{{ url_for('ticket') }}"><i class='bx bxs-message-dots'></i><span class="text">Raise Ticket</span></a></li>
+  </ul>
+</section>
+
+
+  <!-- CONTENT -->
+  <section id="content">
+    <nav>
+      <i class='bx bx-menu'></i>
+      <a href="#" class="nav-link">User Info</a>
+      <form>
+        <div class="form-input">
+          <input type="search" placeholder="Search..." />
+          <button type="submit" class="search-btn"><i class='bx bx-search'></i></button>
+        </div>
+      </form>
+      <input type="checkbox" id="switch-mode" hidden />
+      <label for="switch-mode" class="switch-mode"></label>
+      <a href="#" class="notification"><i class='bx bxs-bell'></i><span class="num">3</span></a>
+      <a href="#" class="profile"><img src="people.png" /></a>
+    </nav>
+
+    <main>
+      <div class="account-section">
+        <img src="people.png" alt="User Photo" class="account-photo">
+        <div class="account-name">{{user.name}}</div>
+
+        <div class="info-row">
+          <span class="info-label">Employee ID:</span>
+          <span class="info-value">{{user._id}}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Email:</span>
+          <span class="info-value">{{user.email}}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Role:</span>
+          <span class="info-value">{{user.role}}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Department:</span>
+          <span class="info-value">{{user.department}}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Office Location:</span>
+          <span class="info-value">{{user.location}}</span>
+        </div>
+
+        <button class="signout-button">Sign Out</button>
+      </div>
+    </main>
+  </section>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

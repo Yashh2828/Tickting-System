@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<!-- Boxicons -->
+	<link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
+	<!-- My CSS -->
+	<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+	<title>UPMRC User Dashboard</title>
+</head>
+
+<body>
+
+
+	<!-- SIDEBAR -->
+	<section id="sidebar">
+		<a href="#" class="brand">
+			<i class='bx bxs-smile'></i>
+			<span class="text">User Panel</span>
+		</a>
+		<ul class="side-menu top">
+			<li class="active">
+				<a href="{{ url_for('dashboard') }}">
+					<i class='bx bxs-dashboard'></i>
+					<span class="text">Dashboard</span>
+				</a>
+			</li>
+			<li>
+				<a href="{{ url_for('account_info') }}">
+					<i class='bx bxs-shopping-bag-alt'></i>
+					<span class="text">Account Info</span>
+				</a>
+			</li>
+			<li>
+				<a href="{{ url_for('equipment') }}">
+					<i class='bx bxs-doughnut-chart'></i>
+					<span class="text">Equipment Details</span>
+				</a>
+			</li>
+			<li>
+				<a href="{{ url_for('ticket') }}">
+					<i class='bx bxs-message-dots'></i>
+					<span class="text">Ticket Raising</span>
+				</a>
+			</li>
+			<li>
+				<a href="#" class="logout">
+					<i class='bx bxs-log-out-circle'></i>
+					<span class="text">Logout</span>
+				</a>
+			</li>
+
+		</ul>
+	</section>
+	<!-- SIDEBAR -->
+
+
+
+
+	<!-- CONTENT -->
+	<section id="content">
+		<!-- NAVBAR -->
+		<nav>
+			<i class='bx bx-menu'></i>
+			<!-- Profile image (left-most) -->
+			<a href="#" class="profile">
+				<img src="people.png">
+			</a>
+
+			<!-- Mode switch (next to profile) -->
+			<input type="checkbox" id="switch-mode" hidden>
+			<label for="switch-mode" class="switch-mode"></label>
+
+			<!-- Menu icon -->
+
+			<!-- Other nav items -->
+		</nav>
+		<!-- NAVBAR -->
+
+
+		<!-- MAIN -->
+		<main>
+			<div class="head-title">
+				<div class="left">
+					<h1>Dashboard</h1>
+					<ul class="breadcrumb">
+						<li>
+							<a href="#">Dashboard</a>
+						</li>
+						<li><i class='bx bx-chevron-right'></i></li>
+						<li>
+							<a class="active" href="#">Home</a>
+						</li>
+					</ul>
+				</div>
+
+			</div>
+
+			<ul class="box-info">
+				<li>
+					<a href="{{ url_for('dashboard', status='pending') }}">
+						<span class="text">
+							<p>Pending</p>
+							<h3>{{ pending_count }}</h3>
+						</span>
+					</a>
+				</li>
+
+				<li>
+					<a href="{{ url_for('dashboard', status='in progress') }}">
+						<span class="text">
+							<p>In Progress</p>
+							<h3>{{ in_progress_count }}</h3>
+						</span>
+					</a>
+				</li>
+
+				<li>
+					<a href="{{ url_for('dashboard', status='resolved') }}">
+						<span class="text">
+							<p>Resolved</p>
+							<h3>{{ resolved_count }}</h3>
+						</span>
+					</a>
+				</li>
+
+				<li>
+					<a href="{{ url_for('dashboard', status='closed') }}">
+						<span class="text">
+							<p>Closed</p>
+							<h3>{{ closed_count }}</h3>
+						</span>
+					</a>
+				</li>
+
+				<li>
+					<a href="{{ url_for('dashboard') }}">
+						<span class="text">
+							<p>Total Ticket</p>
+							<h3>{{ total_ticket }}</h3>
+						</span>
+					</a>
+				</li>
+			</ul>
+
+			<div class="table-data">
+				<div class="order">
+
+					<div class="head">
+						<h3>Tickets Grouped by Status</h3>
+						<i class='bx bx-search'></i>
+						<i class='bx bx-filter'></i>
+					</div>
+
+					<table>
+
+						<thead>
+							<tr>
+								<th>Ticket ID</th>
+								<th>Issued Date</th>
+								<th>Short Description</th>
+								<th>Status</th>
+								<th>Action</th>
+							</tr>
+						</thead>
+
+						<tbody>
+							<!-- Define the display order for ticket statuses -->
+							{% set grouped_statuses = ['pending', 'in progress', 'resolved', 'closed'] %}
+
+							{% for ticket in tickets %}
+							<tr>
+								<td>{{ ticket.ticket_id or ticket._id }}</td>
+								<td>{{ ticket.raised_date or "N/A" }}</td>
+								<td>{{ ticket.short_description or "No description" }}</td>
+								<td>
+									<span class="status {{ ticket.status | lower | replace(' ', '-') }}">
+										{{ ticket.status.title() if ticket.status else "Unknown" }}
+									</span>
+								</td>
+								<td>
+									{% if ticket.status == 'resolved' %}
+									<form method="POST"
+										action="{{ url_for('verify_ticket', ticket_id=ticket['_id']) }}">
+										<button type="submit">Verify</button>
+									</form>
+									{% else %}
+									<button disabled>Verify</button>
+									{% endif %}
+								</td>
+							</tr>
+							{% endfor %}
+
+
+						</tbody>
+					</table>
+
+				</div>
+			</div>
+		</main>
+		<!-- MAIN -->
+	</section>
+	<!-- CONTENT -->
+
+
+	<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+
+</html>

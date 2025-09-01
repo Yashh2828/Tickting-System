@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
+  <title>Raise Ticket</title>
+  <style>
+    .ticket-form {
+      max-width: 800px;
+      margin: 2rem auto;
+      background: var(--light);
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    .ticket-form h2 {
+      text-align: center;
+      color: var(--dark);
+      margin-bottom: 1.5rem;
+      font-size: 1.8rem;
+    }
+
+    .ticket-form label {
+      font-weight: 600;
+      display: block;
+      margin: 1rem 0 0.5rem;
+      color: var(--dark);
+    }
+
+    .ticket-form input,
+    .ticket-form textarea,
+    .ticket-form select {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-family: var(--poppins);
+      font-size: 1rem;
+      background-color: #f9f9f9;
+    }
+
+    .ticket-form textarea {
+      resize: vertical;
+    }
+
+    .ticket-form input[type="file"] {
+      background-color: white;
+    }
+
+    .ticket-form button {
+      background: var(--blue);
+      color: white;
+      border: none;
+      padding: 0.9rem;
+      border-radius: 10px;
+      width: 100%;
+      font-weight: bold;
+      font-size: 1rem;
+      margin-top: 2rem;
+      transition: background 0.3s ease;
+    }
+
+    .ticket-form button:hover {
+      background: #2a6ecf;
+    }
+
+    @media screen and (max-width: 768px) {
+      .ticket-form {
+        padding: 1.5rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- SIDEBAR -->
+  <section id="sidebar">
+    <a href="ticket.html" class="brand">
+      <i class='bx bxs-smile'></i>
+      <span class="text">User Panel</span>
+    </a>
+    <ul class="side-menu top">
+      <li><a href="{{ url_for('index') }}"><i class='bx bxs-dashboard'></i><span class="text">Dashboard</span></a></li>
+      <li><a href="{{ url_for('account_info') }}"><i class='bx bxs-user'></i><span class="text">Account Info</span></a>
+      </li>
+      <li><a href="{{ url_for('equipment') }}"><i class='bx bxs-doughnut-chart'></i><span class="text">Equipment
+            Details</span></a></li>
+      <li class="active"><a href="{{ url_for('ticket') }}"><i class='bx bxs-message-dots'></i><span class="text">Raise
+            Ticket</span></a></li>
+    </ul>
+  </section>
+
+  <!-- CONTENT -->
+  <section id="content">
+    <nav>
+      <i class='bx bx-menu'></i>
+      <a href="#" class="nav-link">Categories</a>
+      <form>
+        <div class="form-input"><input type="search" placeholder="Search..." /><button type="submit"
+            class="search-btn"><i class='bx bx-search'></i></button></div>
+      </form>
+      <input type="checkbox" id="switch-mode" hidden />
+      <label for="switch-mode" class="switch-mode"></label>
+      <a href="#" class="notification"><i class='bx bxs-bell'></i><span class="num">3</span></a>
+      <a href="#" class="profile"><img src="people.png" /></a>
+    </nav>
+
+    <main>
+      <div class="ticket-form">
+        <h2>Raise a New Ticket</h2>
+        <form id="ticketForm" method="POST" action="{{ url_for('submit_ticket') }}" enctype="multipart/form-data">
+
+          <label for="equipmentSelect">Select Equipment</label>
+          <select id="equipmentSelect" name="equipment_data" onchange="autoFillFields(this)" required>
+            <option value="">-- Select Equipment --</option>
+            {% for eq in user_equipments %}
+            <option 
+                value="{{ eq.equipment }}|{{ eq.model }}|{{ eq.serial }}"
+                data-model="{{ eq.model }}"
+                data-serial="{{ eq.serial }}"
+                data-owner="{{ eq.owner }}">
+                {{ eq.label }}
+             </option>
+
+            {% endfor %}
+          </select>
+
+          <input type="hidden" name="equipment" id="equipment">
+
+          <label for="model">Model</label>
+          <input type="text" id="model" name="model" placeholder="Enter Model Number" readonly required>
+
+          <label for="serial">Serial Number</label>
+          <input type="text" id="serial" name="serial" placeholder="Enter Serial Number" readonly required>
+
+          <label for="raised">Date of Ticket</label>
+          <input type="text" id="raised" name="raised" readonly>
+          <script>document.getElementById("raised").value = new Date().toISOString().slice(0, 10);</script>
+
+          <label for="owner">Ownership</label>
+          <select id="owner" name="owner" required>
+            <option value="">-- Select Ownership --</option>
+            <option value="UPMRC">UPMRC</option>
+            <option value="User">User</option>
+          </select>
+
+          <label for="short_desc">Short Description (max 50 characters)</label>
+          <input type="text" id="short_desc" name="short_desc" maxlength="50" required
+            placeholder="Short description of the issue">
+
+          <label for="long_desc">Detailed Description (max 1000 characters)</label>
+          <textarea id="long_desc" name="long_desc" rows="5" maxlength="1000"
+            placeholder="Detailed description of the issue" required></textarea>
+
+          <label for="file">Attach Screenshot/Proof (optional)</label>
+          <input type="file" id="file" name="file" accept="image/*,application/pdf">
+
+          <button type="submit">Submit Ticket</button>
+        </form>
+      </div>
+
+
+      </div>
+    </main>
+  </section>
+
+  <script>
+    function autoFillFields(select) {
+      const [equipment, model, serial] = select.value.split('|');
+      document.getElementById("equipment").value = equipment || '';
+      document.getElementById("model").value = model || '';
+      document.getElementById("serial").value = serial || '';
+    }
+  </script>
+  <script>
+  function autoFillFields(select) {
+    const selectedOption = select.options[select.selectedIndex];
+
+    if (!selectedOption || selectedOption.value === "") return;
+
+    const [equipment, model, serial] = selectedOption.value.split("|");
+    const owner = selectedOption.getAttribute("data-owner");
+
+    document.getElementById("equipment").value = equipment || '';
+    document.getElementById("model").value = model || '';
+    document.getElementById("serial").value = serial || '';
+    document.getElementById("owner").value = owner || '';
+  }
+</script>
+
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+
+</html>
